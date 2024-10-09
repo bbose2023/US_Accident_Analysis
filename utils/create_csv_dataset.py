@@ -46,4 +46,4 @@ def createCSVUsingDask(orig_csv_file_path, lbl_names_file_path, new_csv_file_nam
    
     # Save the transformed DataFrame to a new CSV scroll    
     cleaned_csv_path = Path(f"Resources/{new_csv_file_name}.csv")
-    df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)
+    df_original_csv.to_csv(cleaned_csv_path, index=False, single_file=True, mode=mode)
