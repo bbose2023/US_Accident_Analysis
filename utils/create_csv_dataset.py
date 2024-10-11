@@ -43,6 +43,7 @@ def createCSV(orig_csv_file_path, lbl_names_file_path, new_csv_file_name, mode):
         df_original_csv = pd.read_csv(orig_csv_file_path, usecols=df_labels_csv.columns, encoding='latin-1')
         print(f"################Updated CSV File################# {df_original_csv}") 
         #Save the new cleaned data file
+        df_original_csv = df_original_csv[df_labels_csv.columns]
         cleaned_csv_path = Path(f"Resources/{new_csv_file_name}.csv")
         df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)    
     else:
