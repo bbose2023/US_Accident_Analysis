@@ -19,7 +19,10 @@ def mergeCSV(orig_csv_file_path, new_csv_file_name, mode):
         # Read the CSV file into a DataFrame
         df_original_csv = pd.read_csv(orig_csv_file_path, low_memory=False, encoding='latin-1')
         cleaned_csv_path = Path(f"Resources/{new_csv_file_name}.csv")
-        df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)
+        if mode == 'a':
+            df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode, header=False) 
+        else:
+            df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)
     else:
         print(f"{orig_csv_file_path} does not exist.")
 
@@ -45,7 +48,10 @@ def createCSV(orig_csv_file_path, lbl_names_file_path, new_csv_file_name, mode):
         #Save the new cleaned data file
         df_original_csv = df_original_csv[df_labels_csv.columns]
         cleaned_csv_path = Path(f"Resources/{new_csv_file_name}.csv")
-        df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)    
+        if mode == 'a':
+            df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode, header=False) 
+        else:
+            df_original_csv.to_csv(cleaned_csv_path, index=False, mode=mode)    
     else:
         print(f"{orig_csv_file_path} does not exist.")
 
@@ -68,6 +74,9 @@ def createCSVUsingDask(orig_csv_file_path, lbl_names_file_path, new_csv_file_nam
     
         # Save the transformed DataFrame to a new CSV scroll    
         cleaned_csv_path = Path(f"Resources/{new_csv_file_name}.csv")
-        df_original_csv.to_csv(cleaned_csv_path, index=False, single_file=True, mode=mode)
+        if mode == 'a':
+            df_original_csv.to_csv(cleaned_csv_path, index=False, single_file=True, mode=mode, header=False)
+        else:
+            df_original_csv.to_csv(cleaned_csv_path, index=False, single_file=True, mode=mode)
     else:
         print(f"{orig_csv_file_path} does not exist.")
