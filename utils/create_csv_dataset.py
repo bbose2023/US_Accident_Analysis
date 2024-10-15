@@ -9,6 +9,16 @@ import os
 def file_exists(filename):
     return os.path.exists(filename)
 
+def add_year_to_csv(file_path, year):
+    # Read the CSV file
+    df = pd.read_csv(file_path, encoding='ISO-8859-1', low_memory=False)
+    # Add 'year' column with the specified value
+    df['YEAR'] = year
+    # Save the updated DataFrame to a new CSV file
+    new_file_path = file_path.replace('.csv', f'_with_year_{year}.csv')
+    df.to_csv(new_file_path, index=False)
+    print(f"CSV file updated successfully. New file saved as {new_file_path}")
+
 def mergeCSV(orig_csv_file_path, new_csv_file_name, mode):
     # Code that helped to find the encoding error
     # with open(orig_csv_file_path, 'rb') as f:
