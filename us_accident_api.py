@@ -1,4 +1,8 @@
+from importlib.metadata import distribution
+from re import L
 from flask import Flask, jsonify, render_template, request, url_for, redirect
+from flask_cors import CORS
+from numpy import var
 from pymongo import MongoClient
 import pandas as pd
 
@@ -6,7 +10,7 @@ import pandas as pd
 # Flask Setup
 #################################################
 app = Flask(__name__)
-
+CORS(app)
 #################################################
 # Mongo DB Setup
 #################################################
@@ -25,7 +29,7 @@ accident = db.us_accident
 
 # @app.route('/', methods=('GET', 'POST'))
 # def index():
-#     return render_template('index.html')
+#return render_template('index.html')
 
 @app.route('/')
 def index():
@@ -46,7 +50,25 @@ def accidentsByYear():
 def accidentsByYearData():
     return jsonify(accidentsByYear())
 
+def getAccidentData(YEAR=None, STATE=None):
+    # Define the fields you want to select
+    fields_to_select = {'YEAR': 1, 'STATE':1, 'STATENAME':1, 'FATALS': 1, 'LATITUDE':1, 'LONGITUD':1,'_id': 0}       
+    filter_condition = {"YEAR": YEAR, "STATE": STATE}
+     # Perform the query using find() with projection
+    query_result = accident.find(filter_condition,fields_to_select)
+    # Convert the result to a pandas DataFrame
+    df = pd.DataFrame(list(query_result))
+    # Convert DataFrame to JSON to send to the frontend
+    return df.to_dict(orient='records')
 
+@app.route('/data')
+def data():
+    YEAR = request.args.get('YEAR')
+    STATE = request.args.get('STATE')
+    # Call the function to get data for 2022 and a specific state
+    accident_data = getAccidentData(YEAR=YEAR, STATE=STATE)
+    return jsonify(accident_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
