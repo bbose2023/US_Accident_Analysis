@@ -1,4 +1,5 @@
 body {
+  height: 100%;
   padding: 0;
   margin: 0;
 }
@@ -7,10 +8,51 @@ body {
 body,
 html {
   height: 100%;
+  width: 100%;
 }
 
-.leaflet-popup-content {
+.custom-tooltip .tooltip-table {
+  padding: 5px;
+  background-color: white;
+  border: 1px solid #333;
+  border-radius: 5px;
+}
+
+.custom-tooltip .tooltip-heading {
   text-align: center;
+  font-size: 16px;  /* Increase font size */
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+/* Style the table inside the tooltip */
+.custom-tooltip .tooltip-table table {
+  border-collapse: collapse;
+  width: 80%;
+}
+
+.custom-tooltip .tooltip-table table td {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+
+}
+
+.custom-tooltip .tooltip-table table td:first-child {
+  font-weight: bold;
+  width: 50%;
+  text-align: center;
+
+}
+
+.custom-tooltip .tooltip-table table td:last-child {
+  width: 50%;
+  text-align: center;
+}
+
+/* Optional: Add a small shadow for tooltip effect */
+.leaflet-tooltip.custom-tooltip {
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+  font-size: 12px;
 }
 
 /* CSS from the leaflet-choropleth documentation */

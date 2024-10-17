@@ -52,21 +52,30 @@ def accidentsByYearData():
 
 def getAccidentData(YEAR=None, STATE=None):
     # Define the fields you want to select
-    fields_to_select = {'YEAR': 1, 'STATE':1, 'STATENAME':1, 'FATALS': 1, 'LATITUDE':1, 'LONGITUD':1,'_id': 0}       
-    filter_condition = {"YEAR": YEAR, "STATE": STATE}
+    fields_to_select = {'YEAR': 1, 'STATE':1, 'VE_TOTAL':1,'STATENAME':1, 'FATALS': 1, 'MONTHNAME':1,'DAY':1,'DAY_WEEKNAME':1, 'COUNTYNAME':1,'CITYNAME':1,'LATITUDE':1, 'LONGITUD':1,'_id': 0}       
+    filter_condition = {}
+    if YEAR:
+        filter_condition['YEAR'] = int(YEAR)  # Ensure YEAR is treated as an integer
+    if STATE:
+        filter_condition['STATE'] = int(STATE)  # Query STATE as an integer
      # Perform the query using find() with projection
-    query_result = accident.find(filter_condition,fields_to_select)
-    # Convert the result to a pandas DataFrame
-    df = pd.DataFrame(list(query_result))
-    # Convert DataFrame to JSON to send to the frontend
-    return df.to_dict(orient='records')
+    query_result = list(accident.find(filter_condition,fields_to_select))
+    
+    return query_result
+
+@app.route('/map/<int:YEAR>/<int:STATE>')
+def map_page(YEAR, STATE):
+    # Render the index.html template and pass the year and state values
+    return render_template('map.html', YEAR=YEAR, STATE=STATE)
 
 @app.route('/data')
 def data():
+    # Get YEAR and STATE from request arguments
     YEAR = request.args.get('YEAR')
     STATE = request.args.get('STATE')
     # Call the function to get data for 2022 and a specific state
     accident_data = getAccidentData(YEAR=YEAR, STATE=STATE)
+
     return jsonify(accident_data)
 
 if __name__ == "__main__":
