@@ -1,0 +1,78 @@
+ClassID,Classification,Code,Definition
+1,Passenger Cars,1,"Convertible(excludes sun-roof,t-bar)"
+1,Passenger Cars,2,"2-door sedan,hardtop,coupe"
+1,Passenger Cars,3,3-door/2-door hatchback
+1,Passenger Cars,4,"4-door sedan, hardtop"
+1,Passenger Cars,5,5-door/4-door hatchback
+1,Passenger Cars,6,Station Wagon (excluding van and truck based)
+1,Passenger Cars,7,"Hatchback, number of doors unknown"
+1,Passenger Cars,8,"Sedan/Hardtop, number of doors unknown"
+1,Passenger Cars,9,Other or Unknown automobile type
+1,Passenger Cars,10,"Auto-based pickup (includes E1 Camino, Caballero, Ranchero, SSR, G8-ST, Subaru Brat, Rabbit Pickup)"
+1,Passenger Cars,11,"Auto-based panel (cargo station wagon, auto-based ambulance or hearse)"
+1,Passenger Cars,17,3-door coupe
+2,Light Trucks,19,"Utility Vehicle, Unknown body type"
+2,Light Trucks,20,"Minivan (Chrysler Town and Country, Caravan, Grand Caravan, Voyager, Voyager, Honda-Odyssey, ...)"
+2,Light Trucks,21,"Large Van-Includes van-based buses (B150-B350, Sportsman, Royal Maxiwagon, Ram, Tradesman,...)"
+2,Light Trucks,22,"Step-van or walk-in van (GVWR less than or equal to 10,000 lbs.)"
+2,Light Trucks,45,Other light conventional truck type
+2,Light Trucks,48,Unknown light truck type
+2,Light Trucks,49,"Unknown light vehicle type (automobile,utility vehicle, van, or light truck)"
+2,Light Trucks,28,"Other van type (Hi-Cube Van, Kary)"
+2,Light Trucks,29,Unknown van type
+2,Light Trucks,33,Convertible pickup
+2,Light Trucks,34,Light Pickup
+2,Light Trucks,39,Unknown (pickup style) light conventional truck type
+2,Light Trucks,40,"Cab Chassis Based (includes Rescue Vehicle, Light Stake, Dump, and Tow Truck)"
+2,Light Trucks,41,Truck based panel
+2,Light Trucks,79,Unknown truck type (light/medium/heavy)
+2,Light Trucks,79,Unknown truck type (light/medium/heavy)
+2,Light Trucks,14,"Compact Utility (Utility Vehicle Categories ""Small"" and ""Midsize"")"
+2,Light Trucks,15,"Large utility (ANSI D16.1 Utility Vehicle Categories and ""Full Size"" and ""Large"")"
+2,Light Trucks,16,"Utility station wagon (includes suburban limousines, Suburban, Travellall, Grand Wagoneer)"
+3,Large Trucks,66,"Truck-tractor (Cab only, or with any number of trailing unit; any weight)"
+3,Large Trucks,67,"Medium/heavy Pickup (GVWR greater than 10,000 lbs.)"
+3,Large Trucks,71,"Unknown if single unit or combination unit Medium Truck (GVWR range 10,001 lbs. to 26,000 lbs.)"
+3,Large Trucks,72,"Unknown if single unit or combination unit Heavy Truck (GVWR greater than 26,000 lbs.)"
+3,Large Trucks,78,Unknown medium/heavy truck type
+3,Large Trucks,79,Unknown truck type (light/medium/heavy)
+3,Large Trucks,79,Unknown truck type (light/medium/heavy)
+3,Large Trucks,79,Unknown truck type (light/medium/heavy)
+3,Large Trucks,79,Unknown truck type (light/medium/heavy)
+3,Large Trucks,60,"Step van (GVWR greater than 10,000 lbs.)"
+3,Large Trucks,61,"Single-unit straight truck or Cab-Chassis (GVWR range 10,001 to 19,500 lbs.)"
+3,Large Trucks,62,"Single-unit straight truck or Cab-Chassis (GVWR range 19,501 to 26,000 lbs.)"
+3,Large Trucks,63,"Single-unit straight truck or Cab-Chassis (GVWR greater than 26,000 lbs.)"
+3,Large Trucks,64,Single-unit straight truck or Cab-Chassis (GVWR unknown)
+4,Motorcycles,80,Two Wheel Motorcycle (excluding motor scooters)
+4,Motorcycles,81,Moped
+4,Motorcycles,82,Three-wheel Motorcycle (2 Rear Wheels)
+4,Motorcycles,83,Off-road Motorcycle
+4,Motorcycles,84,Motor Scooter
+4,Motorcycles,85,Unenclosed Three Wheel Motorcycle / Unenclosed Autocycle (1 Rear Wheel)
+4,Motorcycles,86,Enclosed Three Wheel Motorcycle / Enclosed Autocycle (1 Rear Wheel)
+4,Motorcycles,87,Unknown Three Wheel Motorcycle Type
+4,Motorcycles,88,"Other motored cycle type (mini-bikes, pocket motorcycles ?pocket bikes?)"
+4,Motorcycles,89,Unknown motored cycle type
+5,Buses,50,School Bus
+5,Buses,51,Cross Country/Intercity Bus
+5,Buses,52,Transit Bus (City Bus)
+5,Buses,55,"Van-Based Bus GVWR greater than 10,000 lbs."
+5,Buses,58,Other Bus Type
+5,Buses,59,Unknown Bus Type
+6,Other/Unknown,65,Medium/Heavy Vehicle Based Motor Home
+6,Other/Unknown,42,Light Vehicle Based Motor Home [chassis mounted]
+6,Other/Unknown,12,Large Limousine-more than four side doors or stretched chassis
+6,Other/Unknown,13,Three-wheel automobile or automobile derivative
+6,Other/Unknown,90,ATV/ATC [All-Terrain Cycle]
+6,Other/Unknown,91,Snowmobile
+6,Other/Unknown,92,Farm equipment other than trucks
+6,Other/Unknown,93,Construction equipment other than trucks (includes graders)
+6,Other/Unknown,94,Low Speed Vehicle (LSV) / Neighborhood Electric Vehicle (NEV)
+6,Other/Unknown,95,Golf Cart
+6,Other/Unknown,96,Recreational Off-Highway Vehicle
+6,Other/Unknown,97,"Other vehicle type (includes go-cart, fork-lift, city street sweeper dunes/swamp buggy)"
+6,Other/Unknown,98,Not Reported
+6,Other/Unknown,99,Unknown body type
+6,Other/Unknown,73,"Camper or Motor Home, unknown GVWR"
+6,Other/Unknown,-1,Blank
