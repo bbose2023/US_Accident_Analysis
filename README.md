@@ -49,10 +49,10 @@ References:
    2. https://www.nhtsa.gov/crash-data-systems/fatality-analysis-reporting-system
 
 Contributors:
-   Kanha Baidya
-   Bony Bose
-   Yashesh Darji
-   Anirudh Bhamidipati
+   Kanha Baidya,
+   Bony Bose,
+   Yashesh Darji,
+   Anirudh Bhamidipati.
 
   
 
