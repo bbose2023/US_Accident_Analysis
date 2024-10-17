@@ -18,10 +18,10 @@ Additionally, the dashboard will provide insights into the fatalities categorize
 
 # Data:
 The dataset is organized into folders, each containing CSV files that capture various attributes related to traffic accidents. Inside each year’s folder (covering the years 2019 to 2022), the files include:
-    * Demographic Information: Details on the sex and age of individuals involved in accidents.
-    * Vehicle Types: Categorization of the different types of vehicles involved in crashes.
-    * Accident Conditions: Information related to environmental factors like weather conditions and road type at the time of the accident.
-    * Casualty Details: Statistics on fatalities involving drivers, passengers, and bystanders.
+        * Demographic Information: Details on the sex and age of individuals involved in accidents.
+        * Vehicle Types: Categorization of the different types of vehicles involved in crashes.
+        * Accident Conditions: Information related to environmental factors like weather conditions and road type at the time of the accident.
+        * Casualty Details: Statistics on fatalities involving drivers, passengers, and bystanders.
 This structured format allows for an in-depth analysis of trends and patterns in traffic accidents over the years. The data is sourced from the NHTSA Fatality Analysis Reporting System (FARS), and we are focusing on data from 2019 to 2022.
 
 # ETL:
