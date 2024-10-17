@@ -1,4 +1,4 @@
-![Project Banner](https://www.istockphoto.com/vector/vector-of-two-car-accident-top-view-of-vehicle-collision-on-blue-background-gm1151971103-312360883)
+
 
 US_Accident_Analysis:
 
