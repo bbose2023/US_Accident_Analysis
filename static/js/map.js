@@ -1,3 +1,26 @@
+
+function init() {
+    // Get year and state from the URL
+    const YEAR = 2019;
+    const STATE = "Alabama";
+    fetchAccidentData(YEAR, STATE);
+}
+
+let button = d3.select("#query-button");
+
+function handleClick(event) {
+    // Use D3 to select the dropdown menu
+  let dropdownMenu1 = d3.select("#year-select");
+
+  let dropdownMenu2 = d3.select("#state-select");
+
+  // Assign the value of the dropdown menu option to a variable
+  let year = dropdownMenu1.property("value");
+  let state = dropdownMenu2.property("value");
+
+  fetchAccidentData(YEAR, STATE);
+
+
 function getQueryParams() {
     // Split the pathname (e.g., '/map/2022/1') and extract the year and state
     const pathParts = window.location.pathname.split('/');
@@ -10,6 +33,7 @@ function getQueryParams() {
 
 // Get year and state from the URL
 const { YEAR, STATE } = getQueryParams();
+
 
 // Initialize the map, set the center and zoom level
 let map = L.map("map", {
@@ -24,7 +48,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Function to fetch accident data from Flask API and plot on the map
 function fetchAccidentData(YEAR,STATE) {
-    const url = `/data?YEAR=${YEAR}&STATE=${STATE}`;  // Adjust this URL to match your Flask API endpoint
+
+    const url = `/api/map?YEAR=${YEAR}/STATE=${STATE}`;  // Adjust this URL to match your Flask API endpoint
     
     fetch(url)
         .then(response =>  response.json())  // Parse the JSON response
@@ -67,6 +92,5 @@ function fetchAccidentData(YEAR,STATE) {
     })
         .catch(error => console.error('Error fetching data:', error)); 
     }
+}
 
-// Call the function to fetch and display accident data
-fetchAccidentData(YEAR, STATE);
