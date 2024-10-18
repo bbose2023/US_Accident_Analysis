@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>State Cases</h1>
+<p>Select a year to view the fatalities heatmap.</p>
+
+<div class="form-group">
+    <label for="year-select">Select Year:</label>
+    <select id="year-select" class="form-control">
+        {% for year in range(2019, 2023) %}
+        <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
+	<label for="stateDropdown">Select State:</label>
+    <select id="stateDropdown" class="form-control">
+        <option value="Alabama">Alabama</option>
+    </select>
+	<script>
+		const states = [
+		{code: "Alaska", name: "Alaska"},
+		{code: "Arizona", name: "Arizona"},
+		{code: "Arkansas", name: "Arkansas"},
+		{code: "California", name: "California"},
+		{code: "Colorado", name: "Colorado"},
+		{code: "Connecticut", name: "Connecticut"},
+		{code: "Delaware", name: "Delaware"},
+		{code: "Florida", name: "Florida"},
+		{code: "Georgia", name: "Georgia"},
+		{code: "Hawaii", name: "Hawaii"},
+		{code: "Idaho", name: "Idaho"},
+		{code: "Illinois", name: "Illinois"},
+		{code: "Indiana", name: "Indiana"},
+		{code: "Iowa", name: "Iowa"},
+		{code: "Kansas", name: "Kansas"},
+		{code: "Kentucky", name: "Kentucky"},
+		{code: "Louisiana", name: "Louisiana"},
+		{code: "Maine", name: "Maine"},
+		{code: "Maryland", name: "Maryland"},
+		{code: "Massachusetts", name: "Massachusetts"},
+		{code: "Michigan", name: "Michigan"},
+		{code: "Minnesota", name: "Minnesota"},
+		{code: "Mississippi", name: "Mississippi"},
+		{code: "Missouri", name: "Missouri"},
+		{code: "Montana", name: "Montana"},
+		{code: "Nebraska", name: "Nebraska"},
+		{code: "Nevada", name: "Nevada"},
+		{code: "New Hampshire", name: "New Hampshire"},
+		{code: "New Jersey", name: "New Jersey"},
+		{code: "New Mexico", name: "New Mexico"},
+		{code: "New York", name: "New York"},
+		{code: "North Carolina", name: "North Carolina"},
+		{code: "North Dakota", name: "North Dakota"},
+		{code: "Ohio", name: "Ohio"},
+		{code: "Oklahoma", name: "Oklahoma"},
+		{code: "Oregon", name: "Oregon"},
+		{code: "Pennsylvania", name: "Pennsylvania"},
+		{code: "Rhode Island", name: "Rhode Island"},
+		{code: "South Carolina", name: "South Carolina"},
+		{code: "South Dakota", name: "South Dakota"},
+		{code: "Tennessee", name: "Tennessee"},
+		{code: "Texas", name: "Texas"},
+		{code: "Utah", name: "Utah"},
+		{code: "Vermont", name: "Vermont"},
+		{code: "Virginia", name: "Virginia"},
+		{code: "Washington", name: "Washington"},
+		{code: "West Virginia", name: "West Virginia"},
+		{code: "Wisconsin", name: "Wisconsin"},
+		{code: "Wyoming", name: "Wyoming"}
+		];
+        
+        // Populate state dropdown
+        d3.select("#stateDropdown")
+            .selectAll("option")
+            .data(states)
+            .enter()
+            .append("option")
+            .attr("value", d => d.code)
+            .text(d => d.name);
+
+    </script>
+</div>
+
+<button id="query-button" class="btn btn-primary">Query</button>
+
+<div id="content">
+		<canvas id="accidentsByYearData">Loading bar chart...</canvas>
+        <div id="bar-chart">Loading bar chart...</div>
+        <div id="line-chart">Loading line chart...</div>
+        <div id="pie-chart">Loading pie chart...</div> <!-- Added pie chart container -->
+</div>    
+
+<div id="heatmap">Loading heatmap...</div>
+<canvas id="state-graph">Loading line chart...</canvas>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

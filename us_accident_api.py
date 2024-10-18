@@ -1,6 +1,11 @@
 from flask import Flask, jsonify, render_template, request, url_for, redirect
-from pymongo import MongoClient
+import requests
 import pandas as pd
+import plotly.express as px
+import plotly as plotly
+import json
+from utils import *
+import os
 
 #################################################
 # Flask Setup
@@ -8,45 +13,77 @@ import pandas as pd
 app = Flask(__name__)
 
 #################################################
-# Mongo DB Setup
-#################################################
-
-local_mongo_uri = f"mongodb://localhost:27017/"
-
-mongo = MongoClient(port=27017)
-
-db = mongo.us_accidents_db
-
-accident = db.us_accident
-
-#################################################
 # Flask Routes
 #################################################
 
-# @app.route('/', methods=('GET', 'POST'))
-# def index():
-#     return render_template('index.html')
-
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
-def accidentsByYear():
-    pipeline_year = [
-    {"$group": {"_id": "$YEAR", "total_fatalities": {"$sum": 1}}},
-    {"$sort": {"_id": -1}}  # Sort by year descending
-    ]
-    fatalities_by_year = list(accident.aggregate(pipeline_year))
-    # Process data for the chart
-    data_dict = {item['_id']: item['total_fatalities'] for item in fatalities_by_year}
-    return data_dict
+@app.route('/summary')
+def summary():
+    return render_template('summary.html') 
 
-# Get the Total Falalities By Year (2019 - 2022)
-@app.route('/accidentsByYearData')   
-def accidentsByYearData():
-    return jsonify(accidentsByYear())
+@app.route('/state-cases')
+def state_cases():
+    return render_template('state-cases.html')
+
+@app.route('/map')
+def map():
+    return render_template('map.html')
 
 
+#################################################
+# Fatals By Year
+# '/api/state-cases/all' - Get Fatals for all years (2019 - 2022)
+# '/api/state-cases/all/&year=2019' - Get Fatals for provided year
+#################################################
+# Fatals for States
+#################################################
+# '/api/state-cases/all/&factor=state' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=state&year=2019' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=state&year=2019&state=Alabama' - Get Fatals for provided year and State
+#################################################
+# Fatals by weather
+#################################################
+# '/api/state-cases/all/&factor=weather' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=weather&year=2019' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=weather&year=2019&state=Alabama' - Get Fatals for provided year and State
+#################################################
+# Fatals Data for Map
+#################################################
+# '/api/state-cases/all/&factor=markers&year=2019' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=markers&year=2019&state=Alabama' - Get Fatals for provided year and State
+@app.route('/api/state-cases/all', methods=['GET'])
+def accidentsData():
+    year = request.args.get('year')
+    state_name = request.args.get('state')
+    factor = request.args.get('factor')
+    if not factor:
+        if not year:
+            # No year or factor
+            return jsonify(accidentsTotalByAllYear())
+        else:
+            # Logic to fetch accidents for all states for the given year
+            return jsonify(accidentsTotalByYear(year))
 
-if __name__ == "__main__":
+    if factor == 'state':
+        if year and state_name:
+            return jsonify(accidentsTotalByStateAndYear(year, state_name))
+        elif year:
+            return jsonify(accidentsTotalByStateYear(year))
+        elif state_name:
+            # Logic to fetch accidents for a specific state for the given year
+            return jsonify({'message': f'Year parameter not provided for {state_name}'})
+        else:
+            return jsonify(accidentsTotalByStateAllYear())
+    elif factor == 'weather':
+        return jsonify(getWeatherFactorsForStates(year,state_name))
+    elif factor == 'markers':
+        return jsonify(getAccidentsByYearOrStateData(year, state_name))
+    elif factor == 'pop':
+        return jsonify(getStatePopulationFromCSV())
+
+if __name__ == '__main__':
+
     app.run(debug=True)
