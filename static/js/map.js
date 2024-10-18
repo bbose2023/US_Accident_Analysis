@@ -1,3 +1,4 @@
+
 function init() {
     // Get year and state from the URL
     const YEAR = 2019;
@@ -20,6 +21,20 @@ function handleClick(event) {
   fetchAccidentData(YEAR, STATE);
 
 
+function getQueryParams() {
+    // Split the pathname (e.g., '/map/2022/1') and extract the year and state
+    const pathParts = window.location.pathname.split('/');
+    
+    return {
+        YEAR: parseInt(pathParts[2]),  // The 3rd part of the path (index 2) is the year
+        STATE: parseInt(pathParts[3])  // The 4th part of the path (index 3) is the state
+    };
+}
+
+// Get year and state from the URL
+const { YEAR, STATE } = getQueryParams();
+
+
 // Initialize the map, set the center and zoom level
 let map = L.map("map", {
     center: [39.828175, -98.5795],
@@ -33,6 +48,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // Function to fetch accident data from Flask API and plot on the map
 function fetchAccidentData(YEAR,STATE) {
+
     const url = `/api/map?YEAR=${YEAR}/STATE=${STATE}`;  // Adjust this URL to match your Flask API endpoint
     
     fetch(url)
@@ -78,5 +94,3 @@ function fetchAccidentData(YEAR,STATE) {
     }
 }
 
-// Call the function to fetch and display accident data
-init();

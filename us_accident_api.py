@@ -1,5 +1,9 @@
+from importlib.metadata import distribution
+from re import L
 from flask import Flask, jsonify, render_template, request, url_for, redirect
 import requests
+from numpy import var
+from pymongo import MongoClient
 import pandas as pd
 import plotly.express as px
 import plotly as plotly
@@ -11,7 +15,6 @@ import os
 # Flask Setup
 #################################################
 app = Flask(__name__)
-
 #################################################
 # Flask Routes
 #################################################
@@ -67,6 +70,7 @@ def accidentsData():
             # Logic to fetch accidents for all states for the given year
             return jsonify(accidentsTotalByYear(year))
 
+
     if factor == 'state':
         if year and state_name:
             return jsonify(accidentsTotalByStateAndYear(year, state_name))
@@ -84,6 +88,6 @@ def accidentsData():
     elif factor == 'pop':
         return jsonify(getStatePopulationFromCSV())
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     app.run(debug=True)
+
