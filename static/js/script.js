@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         d3.json('/api/state-cases/all?factor=weather').then(data => {
             console.log("Weather factor");
             console.log(data);
-            plotBarChart("Weather","Fatals","","","weatherData",data);            
+            plotBarChart("Weather","Fatals","Weather","Fatals","Totals","weatherData",data);            
         }).catch(error => console.error('Error:', error));
     } 
     else if (pathname === '/map') {
@@ -86,6 +86,16 @@ function plotOverlayingBarChart(xColumnName, yColumnNames,title, xtitle, ytitle,
 }
 
 function plotBarChart(xColumnName, yColumnName,title, xtitle, ytitle, elementId, data) {
+    console.log("Data received:", data);
+    console.log("Expected xColumnName:", xColumnName);
+    console.log("Expected yColumnName:", yColumnName);
+    
+    // Check if data is valid
+    if (!data || !Array.isArray(data)) {
+        console.error("Invalid data format:", data);
+        return;
+    }
+
     const trace = {
         x: data.map(d => d[xColumnName]),
         y: data.map(d => d[yColumnName]),
@@ -94,8 +104,8 @@ function plotBarChart(xColumnName, yColumnName,title, xtitle, ytitle, elementId,
 
     const layout = {
         title: title,
-        xaxis: xtitle,
-        yaxis: ytitle
+        xaxis: { title: xtitle },
+        yaxis: { title: ytitle }
     };
 
     Plotly.newPlot(elementId, [trace], layout);

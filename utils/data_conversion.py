@@ -160,7 +160,7 @@ def accidentsTotalAndPopByStateAllYear():
     return result
 
 #Get all accident entries for the given year and state
-def getAccidentsByYearOrStateData(year, state):
+def getAccidentsMarkers(year, state):
     
     fields_to_select = {
         'YEAR': 1, 
@@ -185,7 +185,7 @@ def getAccidentsByYearOrStateData(year, state):
 # Year, State, Weather, Fatals
 # Year,  Weather, Fatals
 # Weather, Fatals
-def getWeatherFactorsForStates(year, state):
+def getWeatherFactors(year, state):
     
     #Calculate fatalities by Weather
     if year and state:
@@ -222,7 +222,7 @@ def getWeatherFactorsForStates(year, state):
         pipeline_weather = [
             {
                 "$group": {
-                "_id":{"Year":"$YEAR","Weather":"$WEATHERNAME"}, 
+                "_id":{"Weather":"$WEATHERNAME"}, 
                 "Fatals": {"$sum": 1}}
             },
             {"$sort": {"Fatals": -1}}
