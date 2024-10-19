@@ -35,6 +35,10 @@ def state_cases():
 def map():
     return render_template('map.html')
 
+@app.route('/person')
+def person():
+    return render_template('person.html')
+
 
 #################################################
 # Fatals By Year
@@ -82,9 +86,9 @@ def accidentsData():
         else:
             return jsonify(accidentsTotalByStateAllYear())
     elif factor == 'weather':
-        return jsonify(getWeatherFactorsForStates(year,state_name))
+        return jsonify(getWeatherFactors(year,state_name))
     elif factor == 'markers':
-        return jsonify(getAccidentsByYearOrStateData(year, state_name))
+        return jsonify(getAccidentsMarkers(year, state_name))
     elif factor == 'pop':
         return jsonify(getStatePopulationFromCSV())
 
