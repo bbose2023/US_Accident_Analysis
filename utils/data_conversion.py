@@ -261,7 +261,7 @@ def getWeekFactors(year, state):
         pipeline_week = [
         {
             "$match": {
-                "YEAR": { "$eq": year },
+                "YEAR": { "$eq": int(year)},
                 "STATENAME": { "$eq": state },
                 "HOUR": {"$lte": 23}
                 }
@@ -284,7 +284,7 @@ def getWeekFactors(year, state):
         pipeline_week = [
         { 
             "$match": {
-                "YEAR": { "$eq": year },
+                "YEAR": { "$eq": int(year) },
                 "HOUR": {"$lte": 23}
                 }
         },
@@ -326,5 +326,7 @@ def getWeekFactors(year, state):
     ]
        
     result = list(accident.aggregate(pipeline_week))
+
+    print(f'********************************Week Data {year} {state} {flatten_list_of_dicts(result)}*************************************')
     
     return flatten_list_of_dicts(result)

@@ -1,3 +1,8 @@
+// Reference to the chart instance
+let weekHourBubbleChart;// Reference to the chart instance
+let myChart2;
+let myChart;
+
 document.getElementById('homeLink').addEventListener('click', function() {
     console.log('Clear the selected year and state');
     sessionStorage.removeItem('selectedYear');
@@ -46,7 +51,7 @@ function initializeSection()
         }
         d3.json(`${route}&factor=state`).then(data => {
             console.log("factor");
-            console.log(data);
+            console.log(data);            
             plotStateTotalChart(data);             
         }).catch(error => console.error('Error:', error));
 
@@ -62,7 +67,7 @@ function initializeSection()
             plotBarChart("Weather","Fatals","Weather","Fatals","Totals","weatherData",data);            
         }).catch(error => console.error('Error:', error));
       
-        d3.json('/api/state-cases/all?factor=week').then(data => {
+        d3.json(`${route}&factor=week`).then(data => {
             console.log("Week factor");
             console.log(data);
             plotWeekHourBubbleChart(data);            
@@ -118,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         d3.json(`${route}&factor=state`).then(data => {
             console.log("factor");
             console.log(data);
+            
             plotStateTotalChart(data);             
         }).catch(error => console.error('Error:', error));
 
@@ -133,9 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
             plotBarChart("Weather","Fatals","Total Fatal count by weather (2019-2022)","Types","Total Fatals","weatherData",data);            
         }).catch(error => console.error('Error:', error));
         
-        d3.json('/api/state-cases/all?factor=week').then(data => {
+        d3.json(`${route}&factor=week`).then(data => {
             console.log("Week factor");
             console.log(data);
+            
             plotWeekHourBubbleChart(data);            
         }).catch(error => console.error('Error:', error));
 
@@ -389,14 +396,30 @@ function plotBarChartUsingCharts(data) {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Total Fatal Crashes',
+                    label: 'Total Fatals',
                     data: values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(100, 192, 192, 0.2)',
+                    borderColor: 'rgba(100, 192, 192, 1)',
                     borderWidth: 1
                 }]
             },
             options: {
+                indexAxis: 'y',
+                elements: {
+                    bar: {
+                      borderWidth: 2,
+                    }
+                  },
+                  responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'right',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Total Fatal Crashes 2019-2022'
+                  }
+                },
                 onClick: (e) => {
                     const points = myChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
 
@@ -437,28 +460,33 @@ function plotStatePopulation(data)
         // Extract sorted states and populations
         const sortedStates = sortedData.map(d => d.state);
         const sortedPops = sortedData.map(d => d.pop);
-        const ctx = document.getElementById('statepopulation').getContext('2d');
-        const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: sortedStates,
-            datasets: [{
-                label: 'Total Population Per State for Year 2022',
-                data: sortedPops,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                text: sortedStates.map((state, i) => `${state}<br>Population: ${sortedPops[i]}`),
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+        
+        if(!myChart)
+        {
+            const ctx = document.getElementById('statepopulation').getContext('2d');
+            myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedStates,
+                datasets: [{
+                    label: 'Total Population Per State for Year 2022',
+                    data: sortedPops,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    text: sortedStates.map((state, i) => `${state}<br>Population: ${sortedPops[i]}`),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
-});
+            
+        });
+    }
 
 }
 }
@@ -468,50 +496,63 @@ function plotStateTotalChart(data)
     if (Array.isArray(data)) {
         const states = data.map(d => d._id);
         const fatals = data.map(d => d.Fatals);
-        const percents = data.map(d => d.percent);
+        const percents = data.map(d => d.percent);        
+        const selectedState = getData('selectedState');
+        const conditionToDestroy = selectedState === null;
+        console.log(`${conditionToDestroy}conditionToDestroy`);
+        console.log(`${selectedState}selectedState`);
+        console.log(`before ${myChart2}myChart2`);
+        if (myChart2 && conditionToDestroy) {
+            myChart2.destroy();
+        }
+        console.log(`after ${myChart2}myChart2`);
+        if (!myChart2 || conditionToDestroy) 
+        {
+            console.log(`inside ${myChart2}myChart2`);
+            const ctx = document.getElementById('accidentsByStateYearData').getContext('2d');
+            myChart2 = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: states,
+                datasets: [{
+                    label: 'Total Fatals Per State for Year 2019-2022',
+                    data: fatals,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    text: states.map((state, i) => `${state}<br>Fatals: ${fatals[i]}<br>Percent: ${percents[i]}`)
+                }]
+            },
+            options: {
+                onClick: (e) => {
+                    if(getData('selectedYear'))
+                    {
+                        const points = myChart2.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
 
-        const ctx = document.getElementById('accidentsByStateYearData').getContext('2d');
-        const myChart2 = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: states,
-            datasets: [{
-                label: 'Total Fatals Per State for Year 2019-2022',
-                data: fatals,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                text: states.map((state, i) => `${state}<br>Fatals: ${fatals[i]}<br>Percent: ${percents[i]}`)
-            }]
-        },
-        options: {
-            onClick: (e) => {
-                if(getData('selectedYear'))
-                {
-                    const points = myChart2.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
-
-                    if (points.length) {
-                        const firstPoint = points[0];
-                        const label = myChart2.data.labels[firstPoint.index];
-                        displaySelectedLabelState(label);
-                        const value = myChart2.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                        if (points.length) {
+                            const firstPoint = points[0];
+                            const label = myChart2.data.labels[firstPoint.index];
+                            displaySelectedLabelState(label);
+                            const value = myChart2.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                            // Update background colors
                         // Update background colors
-                       // Update background colors
-                       myChart2.data.datasets[0].backgroundColor = myChart2.data.labels.map((l, i) =>
-                        i === firstPoint.index ? 'rgba(75, 192, 192, 1)' : 'rgba(200, 200, 200, 0.2)'
-                        );
-                        myChart2.update();
-                        console.log(`Label: ${label}`);
-                        console.log(`Value: ${value}`);
-                        // Example usage
-                        saveData('selectedState', label);
-                        console.log(`Selected State: ${label}`);
-                        reloadPageWithParamsByState();
+                        myChart2.data.datasets[0].backgroundColor = myChart2.data.labels.map((l, i) =>
+                            i === firstPoint.index ? 'rgba(75, 192, 192, 1)' : 'rgba(200, 200, 200, 0.2)'
+                            );
+                            myChart2.update();
+                            console.log(`Label: ${label}`);
+                            console.log(`Value: ${value}`);
+                            // Example usage
+                            saveData('selectedState', label);
+                            console.log(`Selected State: ${label}`);
+                            reloadPageWithParamsByState();
+                        }
                     }
                 }
             }
-        }
+        
         });
+    }
 
 }}
 function plotWeekHourBubbleChart(data)
@@ -520,11 +561,15 @@ function plotWeekHourBubbleChart(data)
         const formattedData = data.map(d => ({
             x: d.WeekID,
             y: d.HourID,
-            r: d.Fatals/100
+            r: d.Fatals/50
         }));
         
+        if (weekHourBubbleChart) {
+            weekHourBubbleChart.destroy();
+        }
+        
         const ctx = document.getElementById('accidentsByWeekHour').getContext('2d');
-        const myChart = new Chart(ctx, {
+        weekHourBubbleChart = new Chart(ctx, {
         type: 'bubble',
         data: {
             datasets: [{

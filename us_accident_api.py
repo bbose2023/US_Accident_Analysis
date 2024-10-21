@@ -25,31 +25,31 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    fatalities_by_state = accidentsTotalByStateAllYear()
-    df_state = pd.DataFrame(fatalities_by_state).rename(columns={'_id': 'state'})
+    # fatalities_by_state = accidentsTotalByStateAllYear()
+    # df_state = pd.DataFrame(fatalities_by_state).rename(columns={'_id': 'state'})
     
-    states = gpd.read_file(gplt.datasets.get_path('contiguous_usa'))
-    print(states.columns)
-    print(type(states))    
+    # states = gpd.read_file(gplt.datasets.get_path('contiguous_usa'))
+    # print(states.columns)
+    # print(type(states))    
 
-    # Merge your data with geometries
-    df_states = states.merge(df_state, on="state")
+    # # Merge your data with geometries
+    # df_states = states.merge(df_state, on="state")
 
-    # Plot the choropleth map
-    ax = gplt.choropleth(
-    df_states,
-    hue='Fatals',
-    cmap='Reds',
-    linewidth=0.5,
-    edgecolor='black',
-    legend=True,
-    projection=gcrs.AlbersEqualArea()
-    )
+    # # Plot the choropleth map
+    # ax = gplt.choropleth(
+    # df_states,
+    # hue='Fatals',
+    # cmap='Reds',
+    # linewidth=0.5,
+    # edgecolor='black',
+    # legend=True,
+    # projection=gcrs.AlbersEqualArea()
+    # )
 
-    # Set title and show the plot
-    plt.title('Total Fatal Crashes State Wide 2019 - 2022')
+    # # Set title and show the plot
+    # plt.title('Total Fatal Crashes State Wide 2019 - 2022')
 
-    plt.savefig("static\images\TotalStatesCrashes.jpeg")
+    # plt.savefig("static\images\TotalStatesCrashes.jpeg")
     return render_template('home.html') 
 
 @app.route('/summary')
