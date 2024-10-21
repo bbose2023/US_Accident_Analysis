@@ -8,6 +8,7 @@ import json
 mongo = MongoClient(port=27017)
 db = mongo.us_accidents_db
 accident = db.us_accident
+person = db.us_person
 
 # Example MongoDB output
 # fatalities_by_state = [
@@ -332,6 +333,655 @@ def getWeekFactors(year, state):
 
 
 #Get the accident count per year or for selected state per year 
+# Year, State, sex, Fatals
+# Year, sex, Fatals
+# sex, Fatals
+#Get the sex count per year or for selected state per year 
+def getSexFilter(year,state):
+    #Calculate fatalities by sex 
+    print('here',241,year, 'state',state)
+    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        sex_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        #{"PER_TYP": 1},  # Filter for PER_TYP = 1
+                        {"SEXNAME": {'$in': ['Male', 'Female']}},
+                        {"STATENAME": {'$in': [state]}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$SEXNAME" , "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id.SEXNAME": 1  # Sort by sex ascending
+                }
+            }
+        ]
+    elif year:
+        intYear=int(year)
+        vyear=[intYear]
+        sex_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        #{"PER_TYP": 1},  # Filter for PER_TYP = 1
+                        {"SEXNAME": {'$in': ['Male', 'Female']}},
+                        #{"STATENAME": {'$in': state}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$SEXNAME" , "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id.SEXNAME": 1  # Sort by sex ascending
+                }
+            }
+        ]
+    else:
+        sex_pipeline = [
+        {
+            "$match": {
+                '$and': [
+                    #{"PER_TYP": 1},  # Uncomment if you need to filter by PER_TYP = 1
+                    {"SEXNAME": {'$in': ['Male', 'Female']}},  # Filter for Male or Female
+                    {"INJ_SEV": 4}  # Filter by injury severity level 4
+                ]
+            }
+        },
+        {
+            "$group": {
+                "_id": "$SEXNAME",  # Group by the sex name
+                "COUNT": {"$sum": 1}  # Count occurrences of each sex
+            }
+        },
+        {
+            "$sort": {
+                "_id.SEXNAME": 1  # Sort alphabetically by the SEXNAME field
+            }
+        }
+    ]
+
+
+    # Execute the aggregation
+    sex_plot = list(person.aggregate(sex_pipeline))
+    print(sex_pipeline)
+    return sex_plot
+
+
+#Get the accident count per year or for selected state per year 
+# Year, State, age, Fatals
+# Year,  age, Fatals
+# age, Fatals    
+
+#Get the age count per year or for selected state per year 
+def categorize_age(age):
+    if 0 <= age < 5:
+        return '0 to 05 Years'
+    elif 5 <= age < 9:
+        return '05 to 09 Years'
+    elif 10 <= age < 14:
+        return '10 to 14 Years'
+    elif 15 <= age < 20:
+        return '15 to 20 Years'
+    elif 21 <= age < 24:
+        return '21 to 24 Years'
+    elif 25 <= age < 34:
+        return '25 to 34 Years'
+    elif 35 <= age < 44:
+        return '35 to 44 Years'
+    elif 45 <= age < 54:
+        return '45 to 54 Years'   
+    elif 55 <= age < 64:
+        return '55 to 64 Years'
+    elif 65 <= age < 74:
+        return '65 to 74 Years'     
+    else:
+        return '75+ Age'
+    
+def getageFilter(year,state):
+    #Calculate fatalities by age    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        age_pipeline = [
+        {
+            "$match": {
+                '$and': [
+                    #{"PER_TYP": 1},  # Filter for PER_TYP = 1
+                    #{'AGE': {'$gte': 15, '$lte': 100}},  # Filter for age between 15 and 100
+                    {"STATENAME": {'$in': [state]}},
+                    {"YEAR": {'$in': vyear}},
+                    {"INJ_SEV":4}
+                ]
+            }
+        },
+        {
+            "$group": {
+                "_id": "$AGE",  # Group by age
+                "COUNT": {"$sum": 1}  # Count occurrences
+            }
+        },
+        {
+            "$sort": {
+                "_id": 1  # Sort by age ascending
+            }
+        }
+    ]
+    elif year:
+        age_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        #{"PER_TYP": 1},  # Filter for PER_TYP = 1
+                        #{'AGE': {'$gte': 15, '$lte': 100}},  # Filter for age between 15 and 100
+                        #{"STATENAME": {'$in': state}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$AGE",  # Group by age
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  # Sort by age ascending
+                }
+            }
+        ]
+    else:
+        age_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        #{"PER_TYP": 1},  # Filter for PER_TYP = 1
+                        #{'AGE': {'$gte': 15, '$lte': 100}},  # Filter for age between 15 and 100
+                        #{"STATENAME": {'$in': state}},
+                        #{"YEAR": {'$in': year}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$AGE",  # Group by age
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  # Sort by age ascending
+                }
+            }
+        ]
+
+
+    # Execute the aggregation
+    df_age_plot = pd.DataFrame(list(person.aggregate(age_pipeline))).rename(columns={'_id': 'AGE'})
+    df_age_plot['AGE_GROUP'] = df_age_plot['AGE'].apply(categorize_age)
+    
+    df_age_agg_plot = df_age_plot.groupby('AGE_GROUP', as_index=False)['COUNT'].sum()
+    
+    #df_age_agg_plot.head(20)
+    # Convert df_age_agg_plot DataFrame to a list of dictionaries
+    age_agg_list = df_age_agg_plot.to_dict(orient='records')
+    
+    # Display the list of dictionaries
+    return age_agg_list
+
+#Get the accident count per year or for selected state per year 
+# Year, State, person type, Fatals
+# Year,person type, Fatals
+# person type, Fatals   
+
+def getpersontypeFilter(year,state):
+    #Calculate fatalities by person type
+    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        person_type_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"PER_TYP": {"$in": [1, 2, 5]}}, 
+                    
+                        {"STATENAME": {'$in': [state]}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$PER_TYPNAME", 
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                }
+            }
+        ]
+    elif year:
+        print('i am here',268)
+        person_type_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"PER_TYP": {"$in": [1, 2, 5]}}, 
+                    
+                        #{"STATENAME": {'$in': state}},
+                        {"YEAR": {'$in':vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$PER_TYPNAME", 
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                }
+            }
+        ]
+    else:
+        person_type_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"PER_TYP": {"$in": [1, 2, 5]}}, 
+                        
+                            #{"STATENAME": {'$in': state}},
+                            #{"YEAR": {'$in': year}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$PER_TYPNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                    }
+                }
+            ]
+
+    # Execute the aggregation
+    persontype_plot = list(person.aggregate(person_type_pipeline))
+     # Process data for the chart
+    return flatten_list_of_dicts(persontype_plot)
+
+#Get the accident count per year or for selected state per year 
+# Year, State, driver drunk type, Fatals
+# Year,driver drunk type, Fatals
+# driver drunk type, Fatals 
+
+
+def getdrdrunktypeFilter(year,state):
+    #Calculate fatalities by person type
+    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        dr_drunk_type_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"DRINKING": {"$in": [0, 1, 8, 9]}}, 
+                        {"PER_TYP": 1},
+                        {"STATENAME": {'$in': [state]}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$DRINKINGNAME", 
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                    
+                }
+            }
+        ]
+    elif year:
+        dr_drunk_type_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"DRINKING": {"$in": [0, 1, 8, 9]}}, 
+                            {"PER_TYP": 1},
+                            #{"STATENAME": {'$in': state}},
+                            {"YEAR": {'$in': vyear}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$DRINKINGNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+    else:
+        dr_drunk_type_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"DRINKING": {"$in": [0, 1, 8, 9]}}, 
+                            {"PER_TYP": 1},
+                            #{"STATENAME": {'$in': state}},
+                            #{"YEAR": {'$in': year}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$DRINKINGNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+
+    # Execute the aggregation
+    dr_drunk_type_plot = list(person.aggregate(dr_drunk_type_pipeline))
+    # Process data for the chart
+    return flatten_list_of_dicts(dr_drunk_type_plot)
+
+def getTotalFatality(year,state):
+    #Calculate fatalities by person type
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        total_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"STATENAME": {'$in': [state]}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                    
+                }
+            }
+        ]
+    elif year:
+        print('i am here',268)
+        total_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            #{"STATENAME": {'$in': state}},
+                            {"YEAR": {'$in': vyear}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+    else:
+        total_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            #{"STATENAME": {'$in': state}},
+                            #{"YEAR": {'$in': year}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+
+    # Execute the aggregation
+    total_count = list(person.aggregate(total_pipeline))
+    # Process data for the chart
+    return [len(total_count)]
+
+#Get the accident count per year or for selected state per year 
+# Year, State, driver drug type, Fatals
+# Year,driver drug type, Fatals
+# driver drug type, Fatals 
+
+
+def getdrdrugtypeFilter(year,state):
+    #Calculate fatalities by drug type
+    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        dr_drugs_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"DRUGS": {"$in": [0, 1, 8, 9]}}, 
+                            {"PER_TYP": 1},
+                            {"STATENAME": {'$in': [state]}},
+                            {"YEAR": {'$in': vyear}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$DRUGSNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+    elif year:
+        dr_drugs_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"DRUGS": {"$in": [0, 1, 8, 9]}}, 
+                            {"PER_TYP": 1},
+                            #{"STATENAME": {'$in': [state]}},
+                            {"YEAR": {'$in': vyear}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                   "$group": {
+                        "_id": "$DRUGSNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+    else:
+        dr_drugs_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"DRUGS": {"$in": [0, 1, 8, 9]}}, 
+                            {"PER_TYP": 1},
+                            #{"STATENAME": {'$in': [state]}},
+                            #{"YEAR": {'$in': vyear}},
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$DRUGSNAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                        
+                    }
+                }
+            ]
+
+    # Execute the aggregation
+    dr_drug_type_plot = list(person.aggregate(dr_drugs_pipeline))
+    # Process data for the chart
+    return flatten_list_of_dicts(dr_drug_type_plot)
+
+#Get the accident count per year or for selected state per year 
+# Year, State, race type, Fatals
+# Year,race type, Fatals
+
+
+def getracetypeFilter(year,state):
+    #Calculate fatalities by person type
+    
+    if year and state:
+        intYear=int(year)
+        vyear=[intYear]
+        race_type_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"RACE": {"$in": [1,2,18,99]}}, 
+                        {"STATENAME": {'$in': [state]}},
+                        {"YEAR": {'$in': vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$RACENAME", 
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                }
+            }
+        ]
+    elif year:
+        race_type_pipeline = [
+            {
+                "$match": {
+                    '$and': [
+                        {"RACE": {"$in": [1,2,18,99]}}, 
+                        {"YEAR": {'$in':vyear}},
+                        {"INJ_SEV":4}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$RACENAME", 
+                    "COUNT": {"$sum": 1}  # Count occurrences
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1  
+                }
+            }
+        ]
+    else:
+        race_type_pipeline = [
+                {
+                    "$match": {
+                        '$and': [
+                            {"RACE": {"$in": [1,2,18,99]}}, 
+                            {"INJ_SEV":4}
+                        ]
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$RACENAME", 
+                        "COUNT": {"$sum": 1}  # Count occurrences
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1  
+                    }
+                }
+            ]
+
+    # Execute the aggregation
+    racetype_plot = list(person.aggregate(race_type_pipeline))
+     # Process data for the chart
+    return flatten_list_of_dicts(racetype_plot)
+
+
+#Get the accident count per year or for selected state per year 
 # Year,State,Month,Fatals
 # Year,Month, Fatals
 # Week, Fatals
@@ -398,3 +1048,4 @@ def getMonthFactors(year, state):
     result = list(accident.aggregate(pipeline_month))
     
     return flatten_list_of_dicts(result)
+
