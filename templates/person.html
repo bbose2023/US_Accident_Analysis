@@ -1,8 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="weatherData">	
-<h1>Welcome to the Person Page</h1>	
+<div>
+  <canvas id="myChart"></canvas>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('myChart');
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+		onClick: (e) => {
+			const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+			
+			if (points.length) {
+				const firstPoint = points[0];
+				const label = chart.data.labels[firstPoint.index];
+				const value = chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+
+				console.log(`Label: ${label}`);
+				console.log(`Value: ${value}`);
+			}
+		}
+	}
+  });
+</script>
+
+<div>
+  <canvas id="myChart2"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx2 = document.getElementById('myChart2');
+
+  const chart2 = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+		onClick: (e) => {
+			const points = chart2.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+			
+			if (points.length) {
+				const firstPoint = points[0];
+				const label = chart2.data.labels[firstPoint.index];
+				const value = chart2.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+
+				console.log(`Label: ${label}`);
+				console.log(`Value: ${value}`);
+			}
+		}
+	}
+
+  });
+</script>
    
 {% endblock %}

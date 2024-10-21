@@ -7,10 +7,22 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+	<style>
+        #selectedLabel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: grey;
+            padding: 10px;
+            border-radius: 5px;
+			z-index: 1000;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{{ url_for('home') }}">
+        <a class="navbar-brand" href="{{ url_for('home') }}" id="homeLink">
             <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" width="30" height="30" class="d-inline-block align-top" alt="US Flag">
             US Fatal Accidents(2019-2022)
         </a>
@@ -22,19 +34,26 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('summary') }}">Summary</a>
                 </li>
-				<li class="nav-item">
+				<!--li class="nav-item">
                     <a class="nav-link" href="{{ url_for('state_cases') }}">StateCases</a>
-                </li>
+                </li-->
 				<li class="nav-item">
-					<a class="nav-link" href="{{ url_for('map') }}">Map</a>
+					<a class="nav-link" href="{{ url_for('map') }} ">Map</a>
 				</li>
 				<li class="nav-item">
                     <a class="nav-link" href="{{ url_for('person') }}">Person</a>
+                </li>
+				<li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
                 </li>
 
             </ul>
         </div>
     </nav>
+	
+	<div id="yearLabel" style="display: none;"></div> <!-- Initially hidden -->
+	<div id="stateLabel" style="display: none;"></div> <!-- Initially hidden -->
+    
     <div id="content" class="container mt-4">
         {% block content %}
         {% endblock %}

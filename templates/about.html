@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Check out this bubble chart:</h1>
+    <canvas id="bubbleChart"></canvas>
+	 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('bubbleChart').getContext('2d');
+        const bubbleChart = new Chart(ctx, {
+            type: 'bubble',
+            data: {
+                labels: ['Alaska', 'Minnesota', 'Montana', 'North Dakota', 'Idaho'],
+                datasets: [{
+                    label: 'Population vs. Fatalities',
+                    data: [
+                        { x: 'Alaska', y: 24, r: Math.sqrt(710000 / 100000), population: 710000 },
+                        { x: 'Minnesota', y: 54, r: Math.sqrt(5300000 / 100000), population: 5300000 },
+                        { x: 'Montana', y: 12, r: Math.sqrt(989000 / 100000), population: 989000 },
+                        { x: 'North Dakota', y: 18, r: Math.sqrt(672000 / 100000), population: 672000 },
+                        { x: 'Idaho', y: 45, r: Math.sqrt(1560000 / 100000), population: 1560000 },
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'State'
+                        },
+                        type: 'category',
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Fatalities'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const population = context.raw.population;
+                                const fatalities = context.raw.y;
+                                return `State: ${context.raw.x}, Population: ${population}, Fatalities: ${fatalities}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
