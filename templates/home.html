@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to the Data Quartert</h1>
-<p>Kanha, Yasheh, Bony and Anirudhh</p>
+
+    <h1 class="my-4">Study US Fatal Accidents For Year 2019-2022</h1>
+    <div>
+        <img src="{{ url_for('static', filename='images/TotalStatesCrashes.jpeg') }}" alt="Total States Crashes" class="img-fluid">
+    </div>
+	<p>Created By : <b>Kanha, Yasheh, Bony and Anirudh</b></p>
+    <div class="card" id="accidentsContent"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    
+
 {% endblock %}
