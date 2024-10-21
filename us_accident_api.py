@@ -63,6 +63,7 @@ def person():
 # '/api/state-cases/all/&factor=markers&year=2019&state=Alabama' - Get Fatals for provided year and State
 @app.route('/api/state-cases/all', methods=['GET'])
 def accidentsData():
+    print('i am here 66')
     year = request.args.get('year')
     state_name = request.args.get('state')
     factor = request.args.get('factor')
@@ -92,6 +93,57 @@ def accidentsData():
     elif factor == 'pop':
         return jsonify(getStatePopulationFromCSV())
 
+@app.route('/api/person/all', methods=['GET'])
+def personData():
+    year = request.args.get('year')
+    state_name = request.args.get('state')
+
+    print(state_name)
+    result= getSexFilter(year,state_name)
+    print('line 108-us_accident_api.py')
+    
+    for oneresult in result:
+        print(oneresult)
+    
+    result_age=getageFilter(year,state_name)
+    for oneresult in result_age:
+        print(oneresult)
+
+    result_persontype=getpersontypeFilter(year,state_name)
+    for oneresult in result_persontype:
+        print(oneresult)   
+
+    result_drdrunktype=getdrdrunktypeFilter(year,state_name)
+    for oneresult in result_drdrunktype:
+        print(oneresult)  
+
+    result_drdrugtype=getdrdrugtypeFilter(year,state_name)
+    for oneresult in result_drdrugtype:
+        print(oneresult) 
+
+    result_racetype=getracetypeFilter(year,state_name)
+    for oneresult in result_racetype:
+        print(oneresult)        
+    
+    result_total=getTotalFatality(year,state_name)
+    for oneresult in result_total:
+        print(oneresult)  
+
+    # Combine the results into a single JSON object
+    combined_data = {
+        "total_count": result_total,
+        "sex_data": result,
+        "age_data": result_age,
+        "persontype_data": result_persontype,
+        "drdrunktype_data": result_drdrunktype,
+        "drdrugtype_data": result_drdrugtype,
+        "racetype_data": result_racetype
+
+    }
+    jsonResult=jsonify(combined_data)
+    
+    # Return the combined data as a JSON response
+    return jsonResult
+
 if __name__ == "__main__":
     app.run(debug=True)
-
