@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const pathname = window.location.pathname;
+    document.addEventListener('DOMContentLoaded', () => {
+        const pathname = window.location.pathname;
 
     if (pathname === '/state-cases') {
         const state_name = document.getElementById('stateDropdown').value;
@@ -39,23 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(data);
             plotBarChart("Weather","Fatals","Weather","Fatals","Totals","weatherData",data);            
         }).catch(error => console.error('Error:', error));
-    } 
-    else if (pathname === '/map') {
-        // Initialize the map, set the center and zoom level
-        let map = L.map("map", {
-            center: [39.828175, -98.5795],
-            zoom: 5
-        });
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);  
-        // Plot the Markers 
-        d3.json('/api/state-cases/all?factor=markers&year=${2019}').then(data => {
-        plotAccidentDataMap(data);
-    }).catch(error => console.error('Error:', error));
-    }
+        d3.json('/api/state-cases/all?factor=week').then(data => {
+            console.log("Week factor");
+            console.log(data);
+            plotWeekHourBubbleChart(data);            
+        }).catch(error => console.error('Error:', error));
+    } 
+    //     d3.json('/api/state-cases/all?factor=week').then(data => {
+    //     console.log("Week factor");
+    //     console.log(data);
+    //     plottestbubblechart(data);            
+    // }).catch(error => console.error('Error:', error));
+    // }
     else {
     }
 });
@@ -253,9 +249,87 @@ function plotStateTotalChart(data)
             }
         }
 });
-
 }}
-
+function plotWeekHourBubbleChart(data)
+{
+    if (Array.isArray(data)) {
+        const formattedData = data.map(d => ({
+            x: d.WeekID,
+            y: d.HourID,
+            r: d.Fatals/100
+        }));
+        
+        const ctx = document.getElementById('accidentsByWeekHour').getContext('2d');
+        const myChart = new Chart(ctx, {
+        type: 'bubble',
+        data: {
+            datasets: [{
+                label: 'Total Fatalities',
+                data: formattedData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                       display: true,
+                       text: 'Day of the Week',
+                       font: {
+                         size: 16
+                    }
+                },
+                ticks: {
+                    callback: function(value, index, values) {
+                        // Use the WeekName field directly from the data
+                        // Find the matching WeekID and return the WeekName
+                        const matchingData = data.find(d => d.WeekID === value);
+                        return matchingData ? matchingData.Week : `Week ${value}`;
+                    },
+                    font: {
+                        size: 12
+                    }  
+                  }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Hour of the Day',
+                        font: {
+                            size: 16
+                        }
+                },
+                ticks: {
+                    stepSize: 1,
+                    callback: function(value, index, values) {
+                        // Use the HourName field directly from the data
+                        // Find the matching HourID and return the HourName
+                        const matchingData = data.find(d => d.HourID === value);
+                        return matchingData ? matchingData.Hour : `${value} Hour`;
+                    },
+                    font: {
+                        size: 12
+                    }
+                  }
+               } 
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Fatalities by Week & Hour (2019-2022)', // Custom title text
+                    font: {
+                        size: 18, // Adjust the title font size
+                        weight: 'bold' // Make the title bold
+          }
+        }
+     }
+  }    
+});
+}
+}
 function plotStateHeatMap(data)
 {
     if (Array.isArray(data)) {
@@ -307,42 +381,4 @@ function plotStateHeatMap(data)
     }
 }
 
-
-// Function to fetch accident data from Flask API and plot on the map
-function plotAccidentDataMap(data) {
-    // Loop through the accident data
-    data.forEach(function(accident_data) {
-        var lat = parseFloat(accident_data.LATITUDE);
-        var lon = parseFloat(accident_data.LONGITUD);
-        
-        // Check if lat/lon are valid before adding markers
-        if (!isNaN(lat) && !isNaN(lon)) {
-            
-            // Create a marker for each accident location
-            var marker = L.marker([lat, lon]).addTo(map);
-            // Create a more detailed popup with a table
-            var tooltipContent = `
-                <div class="tooltip-table">
-                    <h3 class="tooltip-heading">Accident Details</h3>
-                    <table>
-                        <tr><td><strong>State:</strong></td><td>${accident_data.STATENAME}</td></tr>
-                        <tr><td><strong>Date:</strong></td><td>${accident_data.MONTHNAME}/${accident_data.DAY}/${accident_data.YEAR}</td></tr>
-                        <tr><td><strong>County:</strong></td><td>${accident_data.COUNTYNAME}</td></tr>
-                        <tr><td><strong>City:</strong></td><td>${accident_data.CITYNAME|| "N/A"}</td></tr>
-                        <tr><td><strong>Fatalities in the Crash:</strong></td><td>${accident_data.FATALS}</td></tr>
-                        <tr><td><strong>Vehicles in the Crash:</strong></td><td>${accident_data.VE_TOTAL}</td></tr>
-                    </table>
-                </div>
-            `;
-
-            marker.bindTooltip(tooltipContent, {
-                permanent: false,
-                direction: 'top',
-                offset: [0,-10],
-                className: 'custom-tooltip'
-            });
-
-        }
-    }). catch(error => console.error('Error fetching data:', error)); 
-    };
 
