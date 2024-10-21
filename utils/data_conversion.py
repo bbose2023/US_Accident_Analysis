@@ -240,9 +240,10 @@ def getWeatherFactors(year, state):
 # sex, Fatals
 #Get the sex count per year or for selected state per year 
 def getSexFilter(year,state):
-    #Calculate fatalities by sex 
-    print('here',241,year, 'state',state)
-    
+    #Calculate fatalities by sex     
+    if state=='All State':
+        state=None
+
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -357,7 +358,9 @@ def categorize_age(age):
         return '75+ Age'
     
 def getageFilter(year,state):
-    #Calculate fatalities by age    
+    #Calculate fatalities by age  
+    if state=='All State':
+        state=None  
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -386,6 +389,8 @@ def getageFilter(year,state):
         }
     ]
     elif year:
+        intYear=int(year)
+        vyear=[intYear]
         age_pipeline = [
             {
                 "$match": {
@@ -457,7 +462,8 @@ def getageFilter(year,state):
 
 def getpersontypeFilter(year,state):
     #Calculate fatalities by person type
-    
+    if state=='All State':
+        state=None
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -486,6 +492,8 @@ def getpersontypeFilter(year,state):
             }
         ]
     elif year:
+        intYear=int(year)
+        vyear=[intYear]
         print('i am here',268)
         person_type_pipeline = [
             {
@@ -550,7 +558,8 @@ def getpersontypeFilter(year,state):
 
 def getdrdrunktypeFilter(year,state):
     #Calculate fatalities by person type
-    
+    if state=='All State':
+        state=None
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -580,6 +589,8 @@ def getdrdrunktypeFilter(year,state):
             }
         ]
     elif year:
+        intYear=int(year)
+        vyear=[intYear]
         dr_drunk_type_pipeline = [
                 {
                     "$match": {
@@ -639,6 +650,10 @@ def getdrdrunktypeFilter(year,state):
 
 def getTotalFatality(year,state):
     #Calculate fatalities by person type
+
+    if state=='All State':
+        state=None
+
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -660,7 +675,8 @@ def getTotalFatality(year,state):
             }
         ]
     elif year:
-        print('i am here',268)
+        intYear=int(year)
+        vyear=[intYear]
         total_pipeline = [
                 {
                     "$match": {
@@ -710,7 +726,9 @@ def getTotalFatality(year,state):
 
 def getdrdrugtypeFilter(year,state):
     #Calculate fatalities by drug type
-    
+    if state=='All State':
+        state=None
+
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -740,6 +758,8 @@ def getdrdrugtypeFilter(year,state):
                 }
             ]
     elif year:
+        intYear=int(year)
+        vyear=[intYear]
         dr_drugs_pipeline = [
                 {
                     "$match": {
@@ -804,7 +824,8 @@ def getdrdrugtypeFilter(year,state):
 
 def getracetypeFilter(year,state):
     #Calculate fatalities by person type
-    
+    if state=='All State':
+        state=None
     if year and state:
         intYear=int(year)
         vyear=[intYear]
@@ -832,6 +853,8 @@ def getracetypeFilter(year,state):
             }
         ]
     elif year:
+        intYear=int(year)
+        vyear=[intYear]
         race_type_pipeline = [
             {
                 "$match": {
