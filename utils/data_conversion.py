@@ -170,6 +170,7 @@ def getAccidentsMarkers(year, state):
         'LONGITUD':1,
         'HARM_EVNAME':1,
         'VE_TOTAL':1,
+        'MONTH' :1,
         'MONTHNAME':1,
         'DAY':1,
         'DAY_WEEK':1,
@@ -326,5 +327,74 @@ def getWeekFactors(year, state):
     ]
        
     result = list(accident.aggregate(pipeline_week))
+    
+    return flatten_list_of_dicts(result)
+
+
+#Get the accident count per year or for selected state per year 
+# Year,State,Month,Fatals
+# Year,Month, Fatals
+# Week, Fatals
+
+def getMonthFactors(year, state):
+    
+    #Calculate fatalities by Week days
+    if year and state:
+        pipeline_month = [
+        {
+            "$match": {
+                "YEAR": { "$eq": year },
+                "STATENAME": { "$eq": state },
+                }
+        },
+        {   "$group": {
+                "_id":{
+                      "Year":"$YEAR","State":"$STATENAME",
+                      "MonthID":"$MONTH",
+                      "Month":"$MONTHNAME"
+                      
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    elif year:
+        pipeline_month = [
+        { 
+            "$match": {
+                "YEAR": { "$eq": year },
+                }
+        },
+        {   "$group": {
+                "_id":{
+                       "Year":"$YEAR",
+                       "MonthID":"$MONTH",
+                       "Month":"$MONTHNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    else:
+        # Total Fatalities for weekdays in 4 years 
+        pipeline_month = [
+        {
+            "$group": {
+                "_id":{
+                      "MonthID":"$MONTH",
+                      "Month":"$MONTHNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"Fatals": -1}
+        }
+    ]
+       
+    result = list(accident.aggregate(pipeline_month))
     
     return flatten_list_of_dicts(result)

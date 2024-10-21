@@ -128,6 +128,8 @@ def accidentsData():
         return jsonify(getWeatherFactors(year,state_name))
     elif factor == 'week':
         return jsonify(getWeekFactors(year, state_name))
+    elif factor == 'month':
+        return jsonify(getMonthFactors(year, state_name))
     elif factor == 'markers':
         print(year)
         print(state_name)

@@ -67,11 +67,14 @@ function initializeSection()
             console.log(data);
             plotWeekHourBubbleChart(data);            
         }).catch(error => console.error('Error:', error));
+         d3.json('/api/state-cases/all?factor=month').then(data => {
+          console.log("Month factor");
+          console.log(data);
+          plotSteppedLineChart(data);            
+      }).catch(error => console.error('Error:', error));
     } 
     else {
-    }
-
-       
+    }       
 }
 
 
@@ -138,7 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(data);
             plotWeekHourBubbleChart(data);            
         }).catch(error => console.error('Error:', error));
-
+    
+        d3.json('/api/state-cases/all?factor=month').then(data => {
+        console.log("Month factor");
+        console.log(data);
+        plotSteppedLineChart(data);            
+    }).catch(error => console.error('Error:', error));
     }
     else {
         fetch('https://api.nytimes.com/svc/news/v3/content/all/all.json?api-key=Tr5W4bOznYidz3pT4LOHKlfGjhM52Ry3')
@@ -644,3 +652,78 @@ function plotStateHeatMap(data)
         console.error('Data is not an array:', data);
     }
 }
+
+
+function plotSteppedLineChart(data) {
+    if (Array.isArray(data)) {
+        // Mapping data for MonthID, Year, and Fatals
+        const formattedData = data.map(d => ({
+            x: d.MonthID,   // Use MonthID as x-axis (you can also use Year combined with Month if needed)
+            y: d.Fatals     // Fatals count as y-axis
+        }));
+
+        const ctx = document.getElementById('accidentsByMonthYear').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',    // Stepped line chart is still a line chart type
+            data: {
+                datasets: [{
+                    label: 'Total Fatalities',
+                    data: formattedData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    stepped: true   // Enable stepped line chart
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month of the Year',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                // Assuming 'Month' contains the actual name of the month (e.g., 'January')
+                                const matchingData = data.find(d => d.MonthID === value);
+                                return matchingData ? matchingData.Month : `Month ${value}`;
+                            },
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Fatalities',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Accident Fatalities by Month and Year',
+                        font: {
+                            size: 24,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
