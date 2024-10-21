@@ -1,15 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <div class="container-fluid">
 <div class="row">
-  <div class="col-md-6"><canvas id="accidentsByYearData">Loading bar chart...</canvas></div>	
-  <div class="col-md-6"><canvas id="statepopulation">Loading bar chart...</canvas></div>
+<div class="col-md-6"><canvas id="accidentsByYearData">Loading bar chart...</canvas></div>	
+<div class="col-md-6"><canvas id="statepopulation">Loading bar chart...</canvas></div>
 </div>
-<div id="content">
+</div>
+<div id="content_state">
 		<canvas id="accidentsByStateYearData">Loading bar chart...</canvas>			
-</div> 
-<div id="weatherData">		
 </div>
-   
+
+<div id="sectionToReloadByYear">
+
+<div class="container-fluid">
+<div class="row">
+  <div class="col-md-10"><canvas id="accidentsByStateYearData">Loading bar chart...</canvas>	</div>
+</div>
+<div class="row">
+  <div id="weatherData" class="col-md-6"></div>
+  <div id="content"  class="col-md-6">
+  <canvas id="accidentsByWeekHour">Loading bar chart...</canvas>			
+</div>
+</div>
+
+<div id="sectionToReloadByState">
+<div id="weatherData" class="card"></div>
+<div id="content">
+  <canvas id="accidentsByWeekHour">Loading bar chart...</canvas>			
+</div>
+
+</div>
+
 {% endblock %}

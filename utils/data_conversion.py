@@ -67,7 +67,7 @@ def accidentsTotalByYear(year):
     pipeline_by_year = [
     {
         "$match": {
-        "YEAR": { "$eq": year }
+        "YEAR": { "$eq": int(year) }
         }
     },
     {"$group": {"_id": "$YEAR", "Fatals": {"$sum": 1}}},
@@ -89,9 +89,8 @@ def accidentsTotalByStateAllYear():
     fatalities_by_state = list(accident.aggregate(pipeline_state))
     df_state = pd.DataFrame(fatalities_by_state)
     df_state['percent'] = round((df_state['Fatals'] / df_state['Fatals'].sum()) * 100, 2)
-    result = df_state.to_dict(orient='records')  # Convert DataFrame to list of dicts
-    
-    return result
+    list_of_dicts = df_state.to_dict(orient='records')
+    return flatten_list_of_dicts(list_of_dicts)
 
 #Returns Year, State, Fatals
 def accidentsTotalByStateAndYear(year, state):
@@ -99,38 +98,39 @@ def accidentsTotalByStateAndYear(year, state):
     pipeline_state = [
         {
         "$match": {
-        "YEAR": { "$eq": year },
-        "STATE": { "$eq": state },
+        "YEAR": { "$eq": int(year)},
+        "STATENAME": { "$eq": state },
         }
     },
         {"$group": {"_id":{"Year":"$YEAR","State":"$STATENAME"}, "Fatals": {"$sum": 1}}},
         {"$sort": {"Fatals": -1}}  # Sort by fatalities descending
     ]
     fatalities_by_state = list(accident.aggregate(pipeline_state))
-    df_state = pd.DataFrame(fatalities_by_state).rename(columns={'_id': 'StateName'})
+    df_state = pd.DataFrame(flatten_list_of_dicts(fatalities_by_state)).rename(columns={'State': '_id'})
     df_state['percent'] = round((df_state['Fatals'] / df_state['Fatals'].sum()) * 100, 2)
-    result = df_state.to_dict(orient='records')  # Convert DataFrame to list of dicts
-    
-    return result
+    list_of_dicts = df_state.to_dict(orient='records')
+    return list_of_dicts
 
 #Returns Year, State, Fatals
 def accidentsTotalByStateYear(year):
+    print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
+    print(f'Year received in the request {year}')
     
     pipeline_state = [
     {
         "$match": {
-        "YEAR": { "$eq": year }
+        "YEAR": { "$eq": int(year) }
         }
     },
         {"$group": {"_id":{"Year":"$YEAR","State":"$STATENAME"}, "Fatals": {"$sum": 1}}},
         {"$sort": {"Fatals": -1}}  # Sort by fatalities descending
     ]
     fatalities_by_state = list(accident.aggregate(pipeline_state))
-    df_state = pd.DataFrame(fatalities_by_state).rename(columns={'_id': 'StateName'})
+    print(flatten_list_of_dicts(fatalities_by_state))
+    df_state = pd.DataFrame(flatten_list_of_dicts(fatalities_by_state)).rename(columns={'State': '_id'})
     df_state['percent'] = round((df_state['Fatals'] / df_state['Fatals'].sum()) * 100, 2)
-    result = df_state.to_dict(orient='records')  # Convert DataFrame to list of dicts
-    
-    return result
+    list_of_dicts = df_state.to_dict(orient='records')
+    return list_of_dicts
 
 # Cummulative count for crashes from 2019-2022 for each state along with its population
 #Returns StateName, Fatals, percent, Population
@@ -157,30 +157,43 @@ def accidentsTotalAndPopByStateAllYear():
     
     # Merge the DataFrames
     df_state = df_state.merge(df_pop_final, on="StateName")
-    result = df_state.to_dict(orient='records')  # Convert DataFrame to list of dicts
-   
-    return result
+    return flatten_list_of_dicts(df_state)
 
 #Get all accident entries for the given year and state
 def getAccidentsMarkers(year, state):
-    
+    # print(year)
+    # print(state)
     fields_to_select = {
         'YEAR': 1, 
         'STATENAME':1, 
         'FATALS': 1, 
         'LATITUDE':1, 
         'LONGITUD':1,
-        '_id': 0} 
+        'HARM_EVNAME':1,
+        'VE_TOTAL':1,
+        'MONTH' :1,
+        'MONTHNAME':1,
+        'DAY':1,
+        'DAY_WEEK':1,
+        'DAY_WEEKNAME':1,
+        'COUNTYNAME':1,
+        'CITYNAME':1,
+        'HOUR':1,
+        'HOURNAME':1,
+        '_id': 0
+        } 
+    
     if year and state:
-        filter_condition = {"YEAR": year, "STATENAME": state}        
+        filter_condition = {"YEAR": int(year), "STATENAME": state}        
     elif year:
-        filter_condition = {"YEAR": year}  
+        filter_condition = {"YEAR": int(year)}  
     else:
         return [{'error': 'Year parameter is required'}]
-        
-    query_result = accident.find(filter_condition,fields_to_select)
     
-    return flatten_list_of_dicts(query_result)
+        
+    query_result = list(accident.find(filter_condition,fields_to_select))
+    print(flatten_list_of_dicts(query_result))
+    return query_result
     
 
 #Get the accident count per year or for selected state per year 
@@ -194,7 +207,7 @@ def getWeatherFactors(year, state):
         pipeline_weather = [
             {
                 "$match": {
-                "YEAR": { "$eq": year },
+                "YEAR": { "$eq": int(year) },
                 "STATENAME": { "$eq": state },
                 }
             },
@@ -209,7 +222,7 @@ def getWeatherFactors(year, state):
         pipeline_weather = [
             {
                     "$match": {
-                        "YEAR": { "$eq": year }
+                        "YEAR": { "$eq": int(year) }
                     }
             },
             {
@@ -231,8 +244,93 @@ def getWeatherFactors(year, state):
         ]
        
     result = list(accident.aggregate(pipeline_weather))
+
+    print(f'Weather Data {year} {state} {flatten_list_of_dicts(result)}')
     
     return flatten_list_of_dicts(result)
+
+
+
+# Get the accident count per year or for selected state per year 
+# Year, Week, Hour,  Fatals
+# Year, Week , Fatals
+# Week, Fatals
+
+def getWeekFactors(year, state):
+    
+    #Calculate fatalities by Week days
+    if year and state:
+        pipeline_week = [
+        {
+            "$match": {
+                "YEAR": { "$eq": year },
+                "STATENAME": { "$eq": state },
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {   "$group": {
+                "_id":{
+                      "Year":"$YEAR","State":"$STATENAME",
+                      "WeekID":"$DAY_WEEK",
+                      "Week":"$DAY_WEEKNAME",
+                      "HourID":"$HOUR",
+                      "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    elif year:
+        pipeline_week = [
+        { 
+            "$match": {
+                "YEAR": { "$eq": year },
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {   "$group": {
+                "_id":{
+                       "Year":"$YEAR",
+                       "WeekID":"$DAY_WEEK",
+                       "Week":"$DAY_WEEKNAME",
+                       "HourID":"$HOUR",
+                       "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    else:
+        # Total Fatalities for weekdays in 4 years 
+        pipeline_week = [
+        {   
+            "$match": {
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {
+            "$group": {
+                "_id":{
+                        "WeekID":"$DAY_WEEK",
+                        "Week":"$DAY_WEEKNAME",
+                        "HourID":"$HOUR",
+                        "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"Fatals": -1}
+        }
+    ]
+       
+    result = list(accident.aggregate(pipeline_week))
+    
+    return flatten_list_of_dicts(result)
+
 
 #Get the accident count per year or for selected state per year 
 # Year, State, sex, Fatals
@@ -904,3 +1002,73 @@ def getracetypeFilter(year,state):
     racetype_plot = list(person.aggregate(race_type_pipeline))
      # Process data for the chart
     return flatten_list_of_dicts(racetype_plot)
+
+
+#Get the accident count per year or for selected state per year 
+# Year,State,Month,Fatals
+# Year,Month, Fatals
+# Week, Fatals
+
+def getMonthFactors(year, state):
+    
+    #Calculate fatalities by Week days
+    if year and state:
+        pipeline_month = [
+        {
+            "$match": {
+                "YEAR": { "$eq": year },
+                "STATENAME": { "$eq": state },
+                }
+        },
+        {   "$group": {
+                "_id":{
+                      "Year":"$YEAR","State":"$STATENAME",
+                      "MonthID":"$MONTH",
+                      "Month":"$MONTHNAME"
+                      
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    elif year:
+        pipeline_month = [
+        { 
+            "$match": {
+                "YEAR": { "$eq": year },
+                }
+        },
+        {   "$group": {
+                "_id":{
+                       "Year":"$YEAR",
+                       "MonthID":"$MONTH",
+                       "Month":"$MONTHNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    else:
+        # Total Fatalities for weekdays in 4 years 
+        pipeline_month = [
+        {
+            "$group": {
+                "_id":{
+                      "MonthID":"$MONTH",
+                      "Month":"$MONTHNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"Fatals": -1}
+        }
+    ]
+       
+    result = list(accident.aggregate(pipeline_month))
+    
+    return flatten_list_of_dicts(result)
+
