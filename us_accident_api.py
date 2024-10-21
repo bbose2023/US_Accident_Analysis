@@ -94,6 +94,13 @@ def about():
 #################################################
 # '/api/state-cases/all/&factor=markers&year=2019' - Get Fatals for provided year and State
 # '/api/state-cases/all/&factor=markers&year=2019&state=Alabama' - Get Fatals for provided year and State
+#################################################
+# Fatals by Week
+#################################################
+# '/api/state-cases/all/&factor=week' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=week&year=2019' - Get Fatals for provided year and State
+# '/api/state-cases/all/&factor=week&year=2019&state=Alabama' - Get Fatals for provided year and State
+
 @app.route('/api/state-cases/all', methods=['GET'])
 def accidentsData():
     year = request.args.get('year')
@@ -119,11 +126,16 @@ def accidentsData():
             return jsonify(accidentsTotalByStateAllYear())
     elif factor == 'weather':
         return jsonify(getWeatherFactors(year,state_name))
+    elif factor == 'week':
+        return jsonify(getWeekFactors(year, state_name))
     elif factor == 'markers':
+        print(year)
+        print(state_name)
         return jsonify(getAccidentsMarkers(year, state_name))
+    
     elif factor == 'pop':
         return jsonify(getStatePopulationFromCSV())
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
 

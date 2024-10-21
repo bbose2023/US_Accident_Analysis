@@ -1,3 +1,4 @@
+
 from pymongo import MongoClient
 import pandas as pd
 import plotly.express as px
@@ -159,24 +160,38 @@ def accidentsTotalAndPopByStateAllYear():
 
 #Get all accident entries for the given year and state
 def getAccidentsMarkers(year, state):
-    
+    # print(year)
+    # print(state)
     fields_to_select = {
         'YEAR': 1, 
         'STATENAME':1, 
         'FATALS': 1, 
         'LATITUDE':1, 
         'LONGITUD':1,
-        '_id': 0} 
+        'HARM_EVNAME':1,
+        'VE_TOTAL':1,
+        'MONTHNAME':1,
+        'DAY':1,
+        'DAY_WEEK':1,
+        'DAY_WEEKNAME':1,
+        'COUNTYNAME':1,
+        'CITYNAME':1,
+        'HOUR':1,
+        'HOURNAME':1,
+        '_id': 0
+        } 
+    
     if year and state:
         filter_condition = {"YEAR": int(year), "STATENAME": state}        
     elif year:
         filter_condition = {"YEAR": int(year)}  
     else:
         return [{'error': 'Year parameter is required'}]
-        
-    query_result = accident.find(filter_condition,fields_to_select)
     
-    return flatten_list_of_dicts(query_result)
+        
+    query_result = list(accident.find(filter_condition,fields_to_select))
+    print(flatten_list_of_dicts(query_result))
+    return query_result
     
 
 #Get the accident count per year or for selected state per year 
@@ -229,5 +244,87 @@ def getWeatherFactors(year, state):
     result = list(accident.aggregate(pipeline_weather))
 
     print(f'Weather Data {year} {state} {flatten_list_of_dicts(result)}')
+    
+    return flatten_list_of_dicts(result)
+
+
+
+# Get the accident count per year or for selected state per year 
+# Year, Week, Hour,  Fatals
+# Year, Week , Fatals
+# Week, Fatals
+
+def getWeekFactors(year, state):
+    
+    #Calculate fatalities by Week days
+    if year and state:
+        pipeline_week = [
+        {
+            "$match": {
+                "YEAR": { "$eq": year },
+                "STATENAME": { "$eq": state },
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {   "$group": {
+                "_id":{
+                      "Year":"$YEAR","State":"$STATENAME",
+                      "WeekID":"$DAY_WEEK",
+                      "Week":"$DAY_WEEKNAME",
+                      "HourID":"$HOUR",
+                      "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    elif year:
+        pipeline_week = [
+        { 
+            "$match": {
+                "YEAR": { "$eq": year },
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {   "$group": {
+                "_id":{
+                       "Year":"$YEAR",
+                       "WeekID":"$DAY_WEEK",
+                       "Week":"$DAY_WEEKNAME",
+                       "HourID":"$HOUR",
+                       "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"_id.Year":-1,"Fatals": -1}
+        }
+    ]
+    else:
+        # Total Fatalities for weekdays in 4 years 
+        pipeline_week = [
+        {   
+            "$match": {
+                "HOUR": {"$lte": 23}
+                }
+        },
+        {
+            "$group": {
+                "_id":{
+                        "WeekID":"$DAY_WEEK",
+                        "Week":"$DAY_WEEKNAME",
+                        "HourID":"$HOUR",
+                        "Hour":"$HOURNAME"
+                }, 
+                "Fatals": {"$sum": 1}}
+        },
+        {
+            "$sort": {"Fatals": -1}
+        }
+    ]
+       
+    result = list(accident.aggregate(pipeline_week))
     
     return flatten_list_of_dicts(result)
